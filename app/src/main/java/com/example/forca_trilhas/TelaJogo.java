@@ -25,6 +25,9 @@ public class TelaJogo extends AppCompatActivity implements View.OnClickListener 
     private ArrayList<String> listaPalavras;
     private ArrayList<Integer> listaIDsButtons;
     private int indiceImagem;
+    private TextView txAcerto, txErro;
+    private int acerto, erro;
+
     private Button b1;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -38,6 +41,8 @@ public class TelaJogo extends AppCompatActivity implements View.OnClickListener 
         });
         imagem = findViewById(R.id.imageView2);
         indiceImagem = 0;
+        acerto = 0;
+        erro = 0;
         listaImagem = new ArrayList<Integer>();
         listaImagem.add(R.drawable.forca_1_9);
         listaImagem.add(R.drawable.forca_2_9);
@@ -47,9 +52,8 @@ public class TelaJogo extends AppCompatActivity implements View.OnClickListener 
         listaImagem.add(R.drawable.forca_6_9);
         listaImagem.add(R.drawable.forca_7_9);
         listaImagem.add(R.drawable.forca_9_9);
-
-        b1 = findViewById(R.id.btn1);
-        b1.setOnClickListener(this);
+        listaImagem.add(R.drawable.forca_10_9);
+        listaImagem.add(R.drawable.forca_11_9);
 
         listaPalavras = new ArrayList<String>();
         listaPalavras.add("CASA");
@@ -66,6 +70,11 @@ public class TelaJogo extends AppCompatActivity implements View.OnClickListener 
 
         texto = findViewById(R.id.textView3);
         palavra = new String();
+
+        txAcerto = findViewById(R.id.textAcerto);
+        txErro = findViewById(R.id.textErro);
+
+
 
         listaIDsButtons = new ArrayList<Integer>();
         listaIDsButtons.add(R.id.btn1);
@@ -99,14 +108,15 @@ public class TelaJogo extends AppCompatActivity implements View.OnClickListener 
             Button b = findViewById(listaIDsButtons.get(i));
             b.setOnClickListener(this);
         }
-
         inicializaJogo();
-
     }
 
     public void inicializaJogo(){
         //volto a imagem sem o boneco enforcado
         imagem.setImageResource(R.drawable.forca_0_9);
+        indiceImagem = 0;
+        acerto = 0;
+        erro= 0;
         //palavra recebe uma nova sorteada
         palavra = sorteiaPalavra();
         //instancio o vetor de char pela qtd de caracteres da palavra
@@ -115,14 +125,7 @@ public class TelaJogo extends AppCompatActivity implements View.OnClickListener 
         for(int i =0; i<estado.length;i++){
             estado[i] = '_';
         }
-        //preparar o texto para exibir, incluindo um espaço entre os _
-        String temp = "";
-        for(int j=0; j<estado.length; j++){
-            temp += estado[j]+ " ";
-        }
-        //exibe a palavra
-        texto.setText(temp);
-
+        atualizaTexto();
         for(int i = 0; i<listaIDsButtons.size();i++){
             Button b = findViewById(listaIDsButtons.get(i));
             b.setEnabled(true);
@@ -139,12 +142,48 @@ public class TelaJogo extends AppCompatActivity implements View.OnClickListener 
         imagem.setImageResource(listaImagem.get(indiceImagem));
         indiceImagem++;
     }
+    public void atualizaTexto(){
+        //preparar o texto para exibir, incluindo um espaço entre os _
+        String temp = "";
+        for(int j=0; j<estado.length; j++){
+            temp += estado[j]+ " ";
+        }
+        //exibe a palavra
+        texto.setText(temp);
+    }
+    public void verificaLetra(char c){
+        boolean status = false;
+        for(int i =0; i<palavra.length();i++){
+            if(palavra.charAt(i)==c)
+            {
+                status = true;
+                estado[i] = c;
+            }
+        }
+        if(!status){
+            atualizaImagem();
+            erro++;
+            txErro.setText(Integer.toString(erro)+"/"+Integer.toString(listaImagem.size()));
+        }else{
+            atualizaTexto();
+            acerto++;
+            txAcerto.setText(Integer.toString(acerto));
+        }
+    }
+    public void checaTermino(){
+        boolean verifica = false;
+        for(int i=0; i<estado.length;i++){
+            if(estado[i]=='_')
+            {
+                verifica = true;
+            }
+        }
+    }
 
     @Override
     public void onClick(View view) {
         Button b = (Button) view;
         b.setEnabled(false);
-       //temporario
-        texto.setText(b.getText().toString());
+        verificaLetra(b.getText().toString().charAt(0));
     }
 }
