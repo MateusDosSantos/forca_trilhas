@@ -16,11 +16,14 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
+import java.util.ArrayList;
+
 public class TelaCadastro extends AppCompatActivity implements View.OnClickListener {
     private Button btnCadastro, btnListar;
     private EditText caixaPalavra;
     private RadioGroup grupo;
-    private String categoriaSelecionada;
+    private String categoriaSelecionada, palavraDigitada;
+    private BD bd;
 
 
     @SuppressLint("MissingInflatedId")
@@ -44,6 +47,10 @@ public class TelaCadastro extends AppCompatActivity implements View.OnClickListe
         grupo.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(@NonNull RadioGroup radioGroup, int i) {
+                RadioButton k = findViewById(i);                k.setId(i);
+                Toast.makeText(TelaCadastro.this, k.getText().toString(), Toast.LENGTH_SHORT).show();
+
+
                 if(radioGroup == grupo){
                     if(i == R.id.radioButton)
                     {
@@ -66,13 +73,35 @@ public class TelaCadastro extends AppCompatActivity implements View.OnClickListe
                         categoriaSelecionada = "Esportes";
                     }
                 }
-                Toast.makeText(TelaCadastro.this, categoriaSelecionada, Toast.LENGTH_SHORT).show();
+               // Toast.makeText(TelaCadastro.this, categoriaSelecionada, Toast.LENGTH_SHORT).show();
             }
         });
+        bd = new BD(TelaCadastro.this);
     }
 
     @Override
     public void onClick(View view) {
+         if(view == btnCadastro){
+
+             palavraDigitada = caixaPalavra.getText().toString();
+             Palavra p = new Palavra();
+             p.setNome(palavraDigitada);
+             p.setCategoria(categoriaSelecionada);
+             bd.salvarPalavra(p);
+             Toast.makeText(this, "Salvo!", Toast.LENGTH_SHORT).show();
+
+         }
+        if(view == btnListar){
+            ArrayList<Palavra> lista = new ArrayList<Palavra>();
+            lista = bd.listarPalavras();
+            String stringao = new String();
+            for(int i =0; i<lista.size();i++){
+                stringao+= lista.get(i).getNome() +"|"+lista.get(i).getCategoria()+" ";
+            }
+            Toast.makeText(this, stringao, Toast.LENGTH_LONG).show();
+
+
+        }
 
     }
 }
