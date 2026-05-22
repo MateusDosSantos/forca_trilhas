@@ -1,6 +1,7 @@
 package com.example.forca_trilhas;
 
 import android.annotation.SuppressLint;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
@@ -82,25 +83,44 @@ public class TelaCadastro extends AppCompatActivity implements View.OnClickListe
     @Override
     public void onClick(View view) {
          if(view == btnCadastro){
+             boolean verificaRadio = false;
+             RadioButton r1 = findViewById(R.id.radioButton);
+             RadioButton r2 = findViewById(R.id.radioButton2);
+             RadioButton r3 = findViewById(R.id.radioButton3);
+             RadioButton r4 = findViewById(R.id.radioButton4);
+             RadioButton r5 = findViewById(R.id.radioButton5);
+             if(r1.isChecked()||r2.isChecked()||r3.isChecked()||r4.isChecked()||r5.isChecked()){
+                 verificaRadio = true;
+             }
+             boolean verificaTexto = false;
+             String temporaria = caixaPalavra.getText().toString();
+             if(!temporaria.isEmpty())
+             {
+                 verificaTexto = true;
+             }
+             if(verificaRadio && verificaTexto)
+             {
+                 palavraDigitada = caixaPalavra.getText().toString();
+                 Palavra p = new Palavra();
+                 p.setNome(palavraDigitada);
+                 p.setCategoria(categoriaSelecionada);
+                 bd.salvarPalavra(p);
+                 caixaPalavra.setText("");
+                 Toast.makeText(this, "Salvo!", Toast.LENGTH_SHORT).show();
+             }
+             else{
+                 if(!verificaRadio){
+                     Toast.makeText(this, "Escolha a Categoaria", Toast.LENGTH_SHORT).show();
+                 }
+                 if(!verificaTexto){
+                     Toast.makeText(this, "Digite a palavra", Toast.LENGTH_SHORT).show();
 
-             palavraDigitada = caixaPalavra.getText().toString();
-             Palavra p = new Palavra();
-             p.setNome(palavraDigitada);
-             p.setCategoria(categoriaSelecionada);
-             bd.salvarPalavra(p);
-             Toast.makeText(this, "Salvo!", Toast.LENGTH_SHORT).show();
+                 }
+             }
 
          }
         if(view == btnListar){
-            ArrayList<Palavra> lista = new ArrayList<Palavra>();
-            lista = bd.listarPalavras();
-            String stringao = new String();
-            for(int i =0; i<lista.size();i++){
-                stringao+= lista.get(i).getNome() +"|"+lista.get(i).getCategoria()+" ";
-            }
-            Toast.makeText(this, stringao, Toast.LENGTH_LONG).show();
-
-
+            startActivity(new Intent(this, TelaRecycler.class));
         }
 
     }
